@@ -1,0 +1,28 @@
+﻿@model IEnumerable<ShowMasterApp.Core.DTOs.EventDTO>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Events</title>
+</head>
+<body>
+    <h1>Events List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ev in Model)
+            {
+                <tr>
+                    <td>@ev.Name</td>
+                    <td>@ev.Date.ToString("yyyy-MM-dd")</td> <!-- Date format değiştirebilirsiniz -->
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
