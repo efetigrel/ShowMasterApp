@@ -1,0 +1,21 @@
+ShowMasterApp/
+│-- ShowMasterApp.Presentation/   # Sunum katmanı (MVC)
+│   ├── Controllers/             # MVC controller dosyaları
+│   ├── Views/                   # MVC, UI dosyaları
+│   ├── Program.cs               # Uygulama başlangıç noktası
+│   ├── appsettings.json         # Konfigürasyon ayarları
+│
+│-- ShowMasterApp.Business/       # İş mantığı katmanı
+│   ├── Services/                # İş servisleri (Business Logic)
+│   ├── Interfaces/              # Arayüzler (Abstract katman)
+│
+│-- ShowMasterApp.DataAccess/     # Veri erişim katmanı
+│   ├── Contexts/                # Veritabanı context (DbContext)
+│   ├── Repositories/            # Veritabanı işlemleri (CRUD işlemleri)
+│   ├── Interfaces/              # Veritabanı işlemleri (CRUD işlemleri)
+│
+│-- ShowMasterApp.Core/           # Ortak katman
+│   ├── DTOs/               	  # Sabit değişkenler
+│   ├── Entities/                # Veritabanı modelleri (Tablolar)
+
+

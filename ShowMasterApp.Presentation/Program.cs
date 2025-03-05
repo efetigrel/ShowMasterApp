@@ -3,15 +3,12 @@ using ShowMasterApp.Business.Interfaces;
 using ShowMasterApp.Business.Services;
 using ShowMasterApp.DataAccess.Context;
 using ShowMasterApp.DataAccess.Repository;
-using ShowMasterApp.DataAccess.RepositoryInterface;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Veritabaný baðlantýsýný appsettings.json'dan alýyoruz
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));  // Burada baðlantý dizesi kullanýlýyor
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// DI container'a servisleri ekliyoruz
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 

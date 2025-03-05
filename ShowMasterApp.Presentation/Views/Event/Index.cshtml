@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ShowMasterApp.Core.DTOs.EventDTO>
+﻿@model List<EventDTO>
 
 <!DOCTYPE html>
 <html>
@@ -10,19 +10,27 @@
     <table>
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Date</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var ev in Model)
             {
                 <tr>
+                    <td>@ev.Id</td>
                     <td>@ev.Name</td>
-                    <td>@ev.Date.ToString("yyyy-MM-dd")</td> <!-- Date format değiştirebilirsiniz -->
+                    <td>@ev.Date.ToString("dd.MM.yyyy")</td>
+                    <td>
+                        <a href="@Url.Action("Edit", new { id = ev.Id })">Edit</a> |
+                        <a href="@Url.Action("Delete", new { id = ev.Id })">Delete</a>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
+    <a href="@Url.Action("Create")">Create New Event</a>
 </body>
 </html>

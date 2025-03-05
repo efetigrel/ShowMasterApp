@@ -4,10 +4,10 @@ namespace ShowMasterApp.Business.Interfaces
 {
     public interface IEventService
     {
-        IEnumerable<EventDTO> GetAllEvents();
-        EventDTO GetEvent(int id);
+        Task<List<EventDTO>> GetAllEvents();
+        Task<EventDTO> GetEvent(int id);
         void CreateEvent(EventDTO eventDto);
-        void UpdateEvent(int id, EventDTO eventDto);
+        void UpdateEvent(EventDTO eventDto);
         void DeleteEvent(int id);
     }
 }
