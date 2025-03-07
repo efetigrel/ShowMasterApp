@@ -1,49 +1,61 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ShowMasterApp.Core.Dtos;
 using ShowMasterApp.Core.Entities;
-using ShowMasterApp.Presentation.Models;
+using ShowMasterApp.Core.Validators;
+using Microsoft.Extensions.Logging;
 
 public class AccountController : Controller
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<AccountController> _logger;
+    private readonly IValidator<LoginDto> _loginDtoValidator;
 
     public AccountController(SignInManager<ApplicationUser> signInManager,
                              UserManager<ApplicationUser> userManager,
+                             IValidator<LoginDto> loginDtoValidator,
                              ILogger<AccountController> logger)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _logger = logger;
+        _loginDtoValidator = loginDtoValidator;
     }
 
     [HttpGet]
     public IActionResult Login(string returnUrl = null)
     {
-        return View(new LoginViewModel { ReturnUrl = returnUrl });
+        return View(new LoginDto { ReturnUrl = returnUrl });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel model)
+    public async Task<IActionResult> Login(LoginDto dto)
     {
+        // FluentValidation ile DTO doğrulamasını yapıyoruz
+        var validationResult = await _loginDtoValidator.ValidateAsync(dto);
+
+        if (!validationResult.IsValid)
+        {
+            // Hataları ModelState'e ekliyoruz
+            foreach (var error in validationResult.Errors)
+            {
+                ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+            }
+            return View(dto);
+        }
+
         if (ModelState.IsValid)
         {
-            // Modeldeki verilerin doğru gelmesi için kontrol yapalım
-            if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password))
-            {
-                ModelState.AddModelError("", "Email veya şifre boş olamaz.");
-                return View(model);
-            }
-
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, dto.RememberMe, lockoutOnFailure: false);
 
             if (result.Succeeded)
             {
-                if (!string.IsNullOrEmpty(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+                if (!string.IsNullOrEmpty(dto.ReturnUrl) && Url.IsLocalUrl(dto.ReturnUrl))
                 {
-                    return Redirect(model.ReturnUrl);
+                    return Redirect(dto.ReturnUrl);
                 }
                 return RedirectToAction("Index", "Home");
             }
@@ -51,9 +63,8 @@ public class AccountController : Controller
             ModelState.AddModelError("", "Geçersiz giriş denemesi.");
         }
 
-        return View(model);
+        return View(dto);
     }
-
 
     public async Task<IActionResult> Logout()
     {
