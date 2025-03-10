@@ -15,11 +15,13 @@ public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Şifre zorunludur.")
-            .MinimumLength(6).WithMessage("Şifre en az 6 karakter olmalıdır.");
-
-        RuleFor(x => x.Password)
+            .MinimumLength(6).WithMessage("Şifre en az 6 karakter olmalıdır.")
             .Matches("[A-Z]").WithMessage("Şifre en az bir büyük harf içermelidir.")
             .Matches("[a-z]").WithMessage("Şifre en az bir küçük harf içermelidir.")
             .Matches("[0-9]").WithMessage("Şifre en az bir rakam içermelidir.");
+
+        RuleFor(x => x.ConfirmPassword)
+            .NotEmpty().WithMessage("Şifre onayı zorunludur.")
+            .Equal(x => x.Password).WithMessage("Şifreler uyuşmuyor.");
     }
 }

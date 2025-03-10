@@ -1,28 +1,62 @@
 ﻿@model ShowMasterApp.Core.Dtos.LoginDto
 
-<h2>Giriş Yap</h2>
-
-<form asp-action="Login" method="post">
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" type="password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-group form-check">
-        <input asp-for="RememberMe" class="form-check-input" />
-        <label asp-for="RememberMe" class="form-check-label"></label>
-    </div>
-    <input type="hidden" asp-for="ReturnUrl" />
-    <button type="submit" class="btn btn-primary">Giriş Yap</button>
-</form>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+@{
+    ViewData["Title"] = "Giriş Yap";
+    Layout = "~/Views/Shared/_EmptyLayout.cshtml";
 }
+
+<!-- İçerik -->
+<div class="authentication-wrapper authentication-cover authentication-bg">
+    <div class="authentication-inner row">
+        <!-- Sol Resim -->
+        <div class="d-none d-lg-flex col-lg-7 p-0">
+            <div class="auth-cover-bg auth-cover-bg-color d-flex justify-content-center align-items-center">
+                <img src="~/theme/assets/img/custom-images/bear-background.png" width="680px" />
+            </div>
+        </div>
+        <!-- /Sol Resim -->
+        <!-- Giriş Formu -->
+        <div class="d-flex col-12 col-lg-5 align-items-center p-sm-5 p-4">
+            <div class="w-px-400 mx-auto">
+                <!-- Logo -->
+                <img width="50px" class="mb-3" src="~/theme/assets/img/custom-images/fiberli_logo.svg" alt="Fiberli Logo" />
+                <!-- /Logo -->
+
+                <h3 class="mb-1"><i>A better way to see!</i></h3>
+                <p class="mb-4">Lütfen hesabınıza giriş yapın.</p>
+
+                <!-- Giriş Formu -->
+                <form asp-controller="Account" asp-action="Login" method="post" class="mb-3">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-posta veya Kullanıcı Adı</label>
+                        <input asp-for="Email" class="form-control" id="email" placeholder="E-posta veya kullanıcı adınızı girin" autofocus />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 form-password-toggle">
+                        <div class="d-flex justify-content-between">
+                            <label class="form-label" for="password">Şifre</label>
+                            <a href="auth-forgot-password-cover.html">
+                                <small>Şifrenizi mi unuttunuz?</small>
+                            </a>
+                        </div>
+                        <div class="input-group input-group-merge">
+                            <input asp-for="Password" class="form-control" type="password" id="password" placeholder="••••••••" aria-describedby="password" />
+                            <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label">Beni Hatırla</label>
+                        </div>
+                    </div>
+                    <input type="hidden" asp-for="ReturnUrl" />
+                    <button type="submit" class="btn btn-primary d-grid w-100">Giriş Yap</button>
+                </form>
+            </div>
+        </div>
+        <!-- /Giriş Formu -->
+    </div>
+</div>
+<!-- /İçerik -->

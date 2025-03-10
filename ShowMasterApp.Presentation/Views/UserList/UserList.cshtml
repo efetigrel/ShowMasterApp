@@ -1,0 +1,153 @@
+﻿@model UserCompositeViewModel
+
+@{
+    ViewData["Title"] = "Kullanıcı Oluştur";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row g-4 mb-4">
+        <!-- Existing Card Elements (User statistics) -->
+    </div>
+
+    <!-- Users List Table -->
+    <div class="card">
+        <div class="card-header border-bottom">
+            <h5 class="card-title mb-3">Arama Filtresi</h5>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <h5>Kullanıcı oluşturulamadı !</h5>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+        </div>
+        <div class="card-datatable table-responsive">
+            <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                <div class="row me-2">
+                    <div class="col-md-2">
+                        <div class="me-3">
+                            <div class="dataTables_length" id="DataTables_Table_0_length">
+                                <label>
+                                    <select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-select">
+                                        <option value="10">10</option>
+                                        <option value="25">25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="dt-action-buttons text-xl-end text-lg-start text-md-end text-start d-flex align-items-center justify-content-end flex-md-row flex-column mb-3 mb-md-0">
+                            <div id="DataTables_Table_0_filter" class="dataTables_filter">
+                                <label><input type="search" class="form-control" placeholder="Ara.." aria-controls="DataTables_Table_0"></label>
+                            </div>
+                            <div class="dt-buttons btn-group flex-wrap">
+                                <div class="btn-group">
+                                    <button class="btn btn-secondary buttons-collection dropdown-toggle btn-label-secondary mx-3 waves-effect waves-light" tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false">
+                                        <span><i class="ti ti-screen-share me-1 ti-xs"></i>Dışa Aktar</span>
+                                    </button>
+                                </div>
+                                <button class="btn btn-secondary add-new btn-primary waves-effect waves-light" tabindex="0" aria-controls="DataTables_Table_0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddUser">
+                                    <span>
+                                        <i class="ti ti-plus me-0 me-sm-1 ti-xs"></i>
+                                        <span class="d-none d-sm-inline-block">Yeni Kullanıcı Ekle</span>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table class="datatables-users table dataTable no-footer dtr-column" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+                    <thead class="border-top">
+                        <tr>
+                            @* <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 7%;" aria-sort="descending" aria-label="User: activate to sort column ascending">NO</th> *@
+                            <th class="sorting sorting_desc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 31%;" aria-sort="descending" aria-label="User: activate to sort column ascending">KULLANICI ID</th>
+                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 31%;" aria-label="Role: activate to sort column ascending">KULLANICI ADI</th>
+                            <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" style="width: 31%;" aria-label="Plan: activate to sort column ascending">E-POSTA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.UserList != null && Model.UserList.Any())
+                        {
+                            @foreach (var item in Model.UserList)
+                            {
+                                <tr class="odd">
+                                    <td valign="top">@item.Id</td>
+                                    <td valign="top">@item.FullName</td>
+                                    <td valign="top">@item.Email</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="odd">
+                                <td valign="top">Henüz bir kullanıcı eklenmemiş.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="row mx-2">
+                    <div class="col-sm-12 col-md-6">
+                        <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">0 ile 0 arasındaki 0 kayıttan gösteriliyor.</div>
+                    </div><div class="col-sm-12 col-md-6">
+                        <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
+                            <ul class="pagination">
+                                <li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous">
+                                    <a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="previous" tabindex="-1" class="page-link">Önceki</a>
+                                </li>
+                                <li class="paginate_button page-item next disabled" id="DataTables_Table_0_next">
+                                    <a aria-controls="DataTables_Table_0" aria-disabled="true" role="link" data-dt-idx="next" tabindex="-1" class="page-link">Sonraki</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yeni Kullanıcı Ekleme Formu -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
+        <div class="offcanvas-header">
+            <h5 id="offcanvasAddUserLabel" class="offcanvas-title">Kullanıcı Ekle</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <form asp-controller="UserList" asp-action="CreateUser" method="post">
+                <div class="mb-3">
+                    <label asp-for="CreateUser.FullName" class="form-label">Kullanıcı Adı</label>
+                    <input asp-for="CreateUser.FullName" class="form-control" placeholder="John Doe" />
+                    <span asp-validation-for="CreateUser.FullName" class="invalid-feedback"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="CreateUser.Email" class="form-label">E-Posta</label>
+                    <input asp-for="CreateUser.Email" class="form-control" placeholder="john.doe@example.com" />
+                    <span asp-validation-for="CreateUser.Email" class="invalid-feedback"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="CreateUser.Password" class="form-label">Şifre</label>
+                    <input asp-for="CreateUser.Password" class="form-control" type="password" />
+                    <span asp-validation-for="CreateUser.Password" class="invalid-feedback"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="CreateUser.ConfirmPassword" class="form-label">Şifreyi Onayla</label>
+                    <input asp-for="CreateUser.ConfirmPassword" class="form-control" type="password" />
+                    <span asp-validation-for="CreateUser.ConfirmPassword" class="invalid-feedback"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Kullanıcı Oluştur</button>
+                <button type="reset" class="btn btn-secondary" data-bs-dismiss="offcanvas">İptal</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
