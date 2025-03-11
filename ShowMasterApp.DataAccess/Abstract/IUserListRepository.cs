@@ -5,6 +5,6 @@ namespace ShowMasterApp.DataAccess.Abstract
     public interface IUserListRepository
     {
         Task<List<UserListDto>> GetAll();
-        Task<UserListDto> Delete(int id);
+        Task<UserListDto> Delete(string id);
     }
 }

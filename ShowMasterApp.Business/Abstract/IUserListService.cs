@@ -1,9 +1,7 @@
 ﻿using ShowMasterApp.Core.Dtos;
 
-namespace ShowMasterApp.Business.Abstract
+public interface IUserListService
 {
-    public interface IUserListService
-    {
-        Task<List<UserListDto>> GetAllUsers();
-    }
+    Task<List<UserListDto>> GetAllUsers();
+    Task<UserListDto> DeleteUser(string id); // int yerine string
 }

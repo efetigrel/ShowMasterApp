@@ -65,4 +65,23 @@ public class UserListController : Controller
         return View("UserList", new UserCompositeViewModel { CreateUser = dto, UserList = await _userListService.GetAllUsers() ?? new List<UserListDto>() });
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteUser(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            ModelState.AddModelError("", "Geçersiz kullanıcı ID'si.");
+            return RedirectToAction("UserList");
+        }
+
+        var deletedUser = await _userListService.DeleteUser(id);
+
+        if (deletedUser == null)
+        {
+            ModelState.AddModelError("", "Kullanıcı bulunamadı.");
+        }
+
+        return RedirectToAction("UserList");
+    }
 }

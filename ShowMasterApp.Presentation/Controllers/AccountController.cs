@@ -44,7 +44,6 @@ public class AccountController : Controller
 
         if (ModelState.IsValid)
         {
-            // 📌 Kullanıcıyı email veya username ile bul
             var user = await _userManager.FindByEmailAsync(dto.Email)
                         ?? await _userManager.FindByNameAsync(dto.Email);
 
@@ -54,12 +53,11 @@ public class AccountController : Controller
                 return View(dto);
             }
 
-            // 📌 Doğru kullanıcıyla giriş yap
             var result = await _signInManager.PasswordSignInAsync(user.UserName, dto.Password, dto.RememberMe, lockoutOnFailure: false);
 
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("UserList", "UserList");
             }
 
             ModelState.AddModelError("", "Invalid login attempt.");

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowMasterApp.Presentation"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowMasterApp.Core", "ShowMasterApp.Core\ShowMasterApp.Core.csproj", "{BFAB1DB0-ABED-47D6-BCA9-A88459A524DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowMasterApp.Api", "ShowMasterApp.Api\ShowMasterApp.Api.csproj", "{F4910D0F-09CD-44FB-9215-3D2F0C1E5611}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{BFAB1DB0-ABED-47D6-BCA9-A88459A524DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFAB1DB0-ABED-47D6-BCA9-A88459A524DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFAB1DB0-ABED-47D6-BCA9-A88459A524DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4910D0F-09CD-44FB-9215-3D2F0C1E5611}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4910D0F-09CD-44FB-9215-3D2F0C1E5611}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4910D0F-09CD-44FB-9215-3D2F0C1E5611}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4910D0F-09CD-44FB-9215-3D2F0C1E5611}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

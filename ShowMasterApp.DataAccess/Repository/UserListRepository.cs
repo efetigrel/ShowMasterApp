@@ -14,15 +14,26 @@ namespace ShowMasterApp.DataAccess.Repository
             _context = context;
         }
 
-        public async Task<UserListDto> Delete(int id)
+        public async Task<UserListDto?> Delete(string id)
         {
-            var eventToDelete = _context.Users.Find(id);
-            if (eventToDelete != null)
+            var userToDelete = await _context.Users.FindAsync(id);
+
+            if (userToDelete != null)
             {
-                _context.Users.Remove(eventToDelete);
-                return await _context.SaveChanges();
+                _context.Users.Remove(userToDelete);
+                await _context.SaveChangesAsync();
+
+                return new UserListDto
+                {
+                    Id = userToDelete.Id,
+                    FullName = userToDelete.FullName,
+                    Email = userToDelete.Email
+                };
             }
+
+            return null;
         }
+
 
         public async Task<List<UserListDto>> GetAll()
         {
