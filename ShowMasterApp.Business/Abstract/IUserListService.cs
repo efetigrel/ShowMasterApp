@@ -3,5 +3,5 @@
 public interface IUserListService
 {
     Task<List<UserListDto>> GetAllUsers();
-    Task<UserListDto> DeleteUser(string id); // int yerine string
+    Task<ResultDto> DeleteUser(string id); // int yerine string
 }

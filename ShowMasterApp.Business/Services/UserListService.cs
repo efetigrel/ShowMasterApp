@@ -13,7 +13,7 @@ namespace ShowMasterApp.Business.Services
             _userListRepository = userListRepository;
         }
 
-        public async Task<UserListDto> DeleteUser(string id)
+        public async Task<ResultDto> DeleteUser(string id)
         {
             return await _userListRepository.Delete(id); 
         }

@@ -14,24 +14,49 @@ namespace ShowMasterApp.DataAccess.Repository
             _context = context;
         }
 
-        public async Task<UserListDto?> Delete(string id)
+        public async Task<ResultDto> Delete(string id)
         {
-            var userToDelete = await _context.Users.FindAsync(id);
-
-            if (userToDelete != null)
+            var result = new ResultDto();
+            try
             {
-                _context.Users.Remove(userToDelete);
-                await _context.SaveChangesAsync();
+                var userToDelete = await _context.Users.FindAsync(id);
 
-                return new UserListDto
+                if (userToDelete != null)
                 {
-                    Id = userToDelete.Id,
-                    FullName = userToDelete.FullName,
-                    Email = userToDelete.Email
+                    _context.Users.Remove(userToDelete);
+                    await _context.SaveChangesAsync();
+
+                    return new ResultDto
+                    {
+                        Message = "Kullanıcı silidi.",
+                        Success = true,
+                      
+                    };
+                }
+                else
+                {
+                    return new ResultDto
+                    {
+                        Message = "Kullanıcı bulunamadı.",
+                        Success = false,
+
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return new ResultDto
+                {
+                    Message = ex.Message,
+                    Success = false,
+
                 };
             }
 
-            return null;
+          
+
+            
         }
 
 
