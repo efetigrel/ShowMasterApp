@@ -11,7 +11,8 @@ public class CreateUserDtoValidator : AbstractValidator<CreateUserDto>
 
         RuleFor(x => x.Email)
             .NotEmpty().WithMessage("E-posta zorunludur.")
-            .EmailAddress().WithMessage("Geçerli bir e-posta adresi girin.");
+            .EmailAddress().WithMessage("Geçerli bir e-posta adresi girin.")
+            .Matches(@"^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$").WithMessage("E-posta adresi küçük harfler içermelidir.");
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Şifre zorunludur.")

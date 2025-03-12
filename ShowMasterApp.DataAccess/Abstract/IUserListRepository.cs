@@ -6,5 +6,6 @@ namespace ShowMasterApp.DataAccess.Abstract
     {
         Task<List<UserListDto>> GetAll();
         Task<ResultDto> Delete(string id);
+        Task<ResultDto> Update(UserListDto user);
     }
 }

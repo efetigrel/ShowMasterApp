@@ -1,5 +1,4 @@
-﻿using ShowMasterApp.Business.Abstract;
-using ShowMasterApp.Core.Dtos;
+﻿using ShowMasterApp.Core.Dtos;
 using ShowMasterApp.DataAccess.Abstract;
 
 namespace ShowMasterApp.Business.Services
@@ -22,5 +21,10 @@ namespace ShowMasterApp.Business.Services
         {
             return await _userListRepository.GetAll();
         }
+        public async Task<ResultDto> UpdateUser(UserListDto dto)
+        {
+            return await _userListRepository.Update(dto);
+        }
+
     }
 }

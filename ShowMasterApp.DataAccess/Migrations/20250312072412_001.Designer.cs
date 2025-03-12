@@ -12,8 +12,8 @@ using ShowMasterApp.DataAccess.Context;
 namespace ShowMasterApp.DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250311123614_mig7")]
-    partial class mig7
+    [Migration("20250312072412_001")]
+    partial class _001
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -236,31 +236,20 @@ namespace ShowMasterApp.DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("IpAddress")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("QrCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("RegionId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RegionId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Products");
                 });
@@ -275,16 +264,13 @@ namespace ShowMasterApp.DataAccess.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Regions");
                 });
@@ -338,47 +324,6 @@ namespace ShowMasterApp.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ShowMasterApp.Core.Entities.Product", b =>
-                {
-                    b.HasOne("ShowMasterApp.Core.Entities.Region", "Region")
-                        .WithMany("Products")
-                        .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("ShowMasterApp.Core.Entities.ApplicationUser", "User")
-                        .WithMany("Products")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Region");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ShowMasterApp.Core.Entities.Region", b =>
-                {
-                    b.HasOne("ShowMasterApp.Core.Entities.ApplicationUser", "User")
-                        .WithMany("Regions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ShowMasterApp.Core.Entities.ApplicationUser", b =>
-                {
-                    b.Navigation("Products");
-
-                    b.Navigation("Regions");
-                });
-
-            modelBuilder.Entity("ShowMasterApp.Core.Entities.Region", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

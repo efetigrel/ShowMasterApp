@@ -28,4 +28,8 @@
     <None Include="Context\AppDbContext.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

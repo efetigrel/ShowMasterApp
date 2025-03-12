@@ -1,17 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShowMasterApp.Core.Entities
 {
     public class Product
     {
-        [Key]
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(200)]
+        [Column(TypeName = "nvarchar(100)")]
         public string Name { get; set; }
 
-        [Required]
-        public string QrCode { get; set; } // Ürün Id'sine göre oluşturulacak QR kodu
+        public string? IpAddress { get; set; }
+
+        [Column(TypeName = "nvarchar(100)")]
+        public string UserId { get; set; }
+        public int? RegionId { get; set; }
     }
 }

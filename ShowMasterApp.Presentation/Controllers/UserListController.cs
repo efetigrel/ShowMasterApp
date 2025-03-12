@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ShowMasterApp.Business.Abstract;
 using ShowMasterApp.Core.Dtos;
 
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")] 
 public class UserListController : Controller
 {
     private readonly IUserListService _userListService;
@@ -18,10 +18,9 @@ public class UserListController : Controller
         _userListService = userListService;
     }
 
-    // Kullanıcı listesini ve formu gönderen action
     public async Task<IActionResult> UserList()
     {
-        var users = await _userListService.GetAllUsers() ?? new List<UserListDto>();  // Ensure it's never null
+        var users = await _userListService.GetAllUsers() ?? new List<UserListDto>();
         var viewModel = new UserCompositeViewModel
         {
             UserList = users,
@@ -29,7 +28,6 @@ public class UserListController : Controller
         };
         return View(viewModel);
     }
-
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -39,10 +37,8 @@ public class UserListController : Controller
 
         if (!validationResult.IsValid)
         {
-            Console.WriteLine("FluentValidation Hataları:");
             foreach (var error in validationResult.Errors)
             {
-                Console.WriteLine($"Alan: {error.PropertyName}, Hata: {error.ErrorMessage}");
                 ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
             }
             return View("UserList", new UserCompositeViewModel { CreateUser = dto, UserList = await _userListService.GetAllUsers() ?? new List<UserListDto>() });
@@ -53,6 +49,12 @@ public class UserListController : Controller
             var result = await _userService.CreateUserAsync(dto);
             if (result.Succeeded)
             {
+                // Kullanıcı başarılı şekilde oluşturuldu, şimdi rol ekleyelim
+                var user = await _userService.GetUserByEmailAsync(dto.Email);
+                if (user != null)
+                {
+                    await _userService.AddUserToRoleAsync(user, dto.Role);
+                }
                 return RedirectToAction("UserList");
             }
 
@@ -84,4 +86,32 @@ public class UserListController : Controller
 
         return RedirectToAction("UserList");
     }
+
+    //[HttpPost]
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> UpdateUser([Bind(Prefix = "UpdateUser")] UserListDto dto)
+    //{
+    //    if (!ModelState.IsValid)
+    //    {
+    //        return View("UserList", new UserCompositeViewModel
+    //        {
+    //            UserList = await _userListService.GetAllUsers() ?? new List<UserListDto>(),
+    //            CreateUser = new CreateUserDto()
+    //        });
+    //    }
+
+    //    var result = await _userListService.UpdateUser(dto);
+    //    if (result.Succeeded)
+    //    {
+    //        return RedirectToAction("UserList");
+    //    }
+
+    //    ModelState.AddModelError("", "Kullanıcı güncellenemedi.");
+    //    return View("UserList", new UserCompositeViewModel
+    //    {
+    //        UserList = await _userListService.GetAllUsers() ?? new List<UserListDto>(),
+    //        CreateUser = new CreateUserDto()
+    //    });
+    //}
+
 }
