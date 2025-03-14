@@ -73,9 +73,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (Model.UserList != null && Model.UserList.Any())
+                        @if (Model.ListUser != null && Model.ListUser.Any())
                         {
-                            @foreach (var item in Model.UserList)
+                            @foreach (var item in Model.ListUser)
                             {
                                 <tr class="odd">
                                     <td>@item.Id</td>
@@ -84,7 +84,8 @@
                                     <td>@item.Email</td>
                                     <td class="text-center">
                                         <div class="d-inline-flex gap-2">
-                                            <button type="button" class="btn btn-xs btn-label-warning" data-bs-toggle="modal" data-bs-target="#updateUserModal-@item.Id">
+                                            <!-- Güncelle butonunda modal ID'sini benzersiz hale getirdik -->
+                                            <button type="button" class="btn btn-xs btn-label-warning" data-bs-toggle="offcanvas" data-bs-target="#offcanvasUpdateUser-@item.Id">
                                                 <i class="ti ti-pencil me-1"></i> Güncelle
                                             </button>
 
@@ -92,7 +93,8 @@
                                                 <i class="ti ti-trash me-1"></i> Sil
                                             </button>
                                         </div>
-                                        <form id="delete-form-@item.Id" asp-controller="UserList" asp-action="DeleteUser" method="post" style="display: none;">
+                                        <form id="delete-form-@item.Id" asp-controller="User" asp-action="DeleteUser" method="post" style="display: none;">
+                                            @Html.AntiForgeryToken()
                                             <input type="hidden" name="id" value="@item.Id" />
                                         </form>
                                     </td>
@@ -110,7 +112,8 @@
                 <div class="row mx-2">
                     <div class="col-sm-12 col-md-6">
                         <div class="dataTables_info" id="DataTables_Table_0_info" role="status" aria-live="polite">0 ile 0 arasındaki 0 kayıttan gösteriliyor.</div>
-                    </div><div class="col-sm-12 col-md-6">
+                    </div>
+                    <div class="col-sm-12 col-md-6">
                         <div class="dataTables_paginate paging_simple_numbers" id="DataTables_Table_0_paginate">
                             <ul class="pagination">
                                 <li class="paginate_button page-item previous disabled" id="DataTables_Table_0_previous">
@@ -127,56 +130,58 @@
         </div>
     </div>
 
-    @* @foreach (var item in Model.UserList)
-{
-    <div class="modal fade" id="updateUserModal-@item.Id" tabindex="-1" aria-labelledby="updateUserModalLabel-@item.Id" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="updateUserModalLabel-@item.Id">Kullanıcı Güncelle</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form asp-controller="UserList" asp-action="UpdateUser" method="post">
-                    <div class="modal-body">
-                        <input type="hidden" name="Id" value="@item.Id" />
-
-                        <div class="mb-3">
-                            <label class="form-label">Kullanıcı Adı</label>
-                            <input name="FullName" class="form-control" value="@item.FullName" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">E-Posta</label>
-                            <input name="Email" class="form-control" value="@item.Email" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Rol</label>
-                            <select name="Role" class="form-control">
-                                <option value="Admin" @(item.Role == "Admin" ? "selected" : "")>Admin</option>
-                                <option value="Moderator" @(item.Role == "Moderator" ? "selected" : "")>Moderator</option>
-                            </select>
-                        </div>
+    @* Her kullanıcı için benzersiz Güncelleme Modal'ı oluşturduk *@
+    @foreach (var item in Model.ListUser)
+    {
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasUpdateUser-@item.Id" aria-labelledby="offcanvasUpdateUserLabel-@item.Id">
+            <div class="offcanvas-header">
+                <h5 id="offcanvasUpdateUserLabel-@item.Id" class="offcanvas-title">Kullanıcı Güncelle</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <!-- Binding prefix kaldırılarak input name'leri doğrudan UserDto property adlarıyla eşleştiriliyor -->
+                <form asp-controller="User" asp-action="UpdateUser" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" value="@item.Id" />
+                    <div class="mb-3">
+                        <label class="form-label" for="FullName-@item.Id">Kullanıcı Adı</label>
+                        <input type="text" class="form-control" id="FullName-@item.Id" name="FullName" value="@item.FullName" />
+                        <span class="text-danger" data-valmsg-for="FullName"></span>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-label-success">Güncelle</button>
-                        <button type="button" class="btn btn-label-danger" data-bs-dismiss="modal">İptal</button>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="Email-@item.Id">Email</label>
+                        <input type="email" class="form-control" id="Email-@item.Id" name="Email" value="@item.Email" />
+                        <span class="text-danger" data-valmsg-for="Email"></span>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="Role-@item.Id">Rol</label>
+                        <select class="form-control" id="Role-@item.Id" name="Role">
+                            @foreach (var role in new List<string> { "Admin", "Moderator" })
+                            {
+                                <option value="@role" selected="@(role == item.Role ? "selected" : null)">@role</option>
+                            }
+                        </select>
+                        <span class="text-danger" data-valmsg-for="Role"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-label-success">Güncelle</button>
+                    <button type="button" class="btn btn-label-danger" data-bs-dismiss="offcanvas">İptal</button>
                 </form>
             </div>
         </div>
-    </div>
-}
- *@
+    }
 
-    <!-- Yeni Kullanıcı Ekleme Formu -->
+    <!-- Yeni Kullanıcı Ekleme Modal'ı -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddUser" aria-labelledby="offcanvasAddUserLabel">
         <div class="offcanvas-header">
             <h5 id="offcanvasAddUserLabel" class="offcanvas-title">Kullanıcı Ekle</h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-            <form asp-controller="UserList" asp-action="CreateUser" method="post">
+            <form asp-controller="User" asp-action="CreateUser" method="post">
+                @Html.AntiForgeryToken()
                 <div class="mb-3">
                     <label asp-for="CreateUser.FullName" class="form-label">Kullanıcı Adı</label>
                     <input asp-for="CreateUser.FullName" class="form-control" placeholder="John Doe" />
@@ -218,25 +223,22 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @Html.Partial("_ValidationScriptsPartial")
 }
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-       function confirmDelete(userId) {
+    function confirmDelete(userId) {
         Swal.fire({
             title: "Uyarı!",
             text: "Kullanıcıyı silmek istediğinize emin misiniz?",
             icon: "warning",
             showCancelButton: true,
-
             confirmButtonText: "Evet, sil!",
             cancelButtonText: "İptal",
             customClass: {
                 popup: 'swal2-popup-custom',
                 confirmButton: 'btn btn-label-success',
-                cancelButton: 'btn btn-label-danger' 
+                cancelButton: 'btn btn-label-danger'
             }
         }).then((result) => {
             if (result.isConfirmed) {
@@ -247,10 +249,8 @@
 </script>
 
 <style>
-    /* SweetAlert2 popup background color */
     .swal2-popup-custom {
-        background-color: #2f3349 !important; /* Lacivert arka plan rengi */
-        color: #fff; /* Yazı rengi beyaz */
+        background-color: #2f3349 !important;
+        color: #fff;
     }
 </style>
-

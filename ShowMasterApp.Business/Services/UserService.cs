@@ -1,71 +1,98 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using ShowMasterApp.Business.Abstract;
 using ShowMasterApp.Core.Dtos;
 using ShowMasterApp.Core.Entities;
+using ShowMasterApp.DataAccess.Abstract;
 
-namespace ShowMasterApp.Business.Services
+public class UserService : IUserService
 {
-    public class UserService : IUserService
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IUserRepository _userRepository;
+
+    public UserService(
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
+        RoleManager<IdentityRole> roleManager,
+        IUserRepository userRepository)
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager; // ✅ RoleManager ekleniyor
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _roleManager = roleManager;
+        _userRepository = userRepository;
+    }
 
-        public UserService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
+    // Kullanıcı oluşturma işlemi
+    public async Task<IdentityResult> CreateUserAsync(CreateUserDto dto)
+    {
+        var user = new ApplicationUser
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _roleManager = roleManager; // ✅ RoleManager initialize ediliyor
-        }
+            UserName = dto.Email,
+            Email = dto.Email,
+            FullName = dto.FullName
+        };
 
-        // Kullanıcı oluşturma işlemi
-        public async Task<IdentityResult> CreateUserAsync(CreateUserDto dto)
+        var result = await _userManager.CreateAsync(user, dto.Password);
+
+        if (result.Succeeded)
         {
-            var user = new ApplicationUser
+            // Rollerin veritabanında mevcut olup olmadığını kontrol et
+            if (!await _roleManager.RoleExistsAsync("Admin"))
             {
-                UserName = dto.Email,
-                Email = dto.Email,
-                FullName = dto.FullName
-            };
-
-            var result = await _userManager.CreateAsync(user, dto.Password);
-
-            if (result.Succeeded)
-            {
-                // Rollerin veritabanında mevcut olup olmadığını kontrol et
-                if (!await _roleManager.RoleExistsAsync("Admin"))
-                {
-                    await _roleManager.CreateAsync(new IdentityRole("Admin"));
-                }
-
-                if (!await _roleManager.RoleExistsAsync("Moderator"))
-                {
-                    await _roleManager.CreateAsync(new IdentityRole("Moderator"));
-                }
-
-                // Seçilen rolü kullanıcıya ata
-                await _userManager.AddToRoleAsync(user, dto.Role);
+                await _roleManager.CreateAsync(new IdentityRole("Admin"));
             }
 
-            return result;
+            if (!await _roleManager.RoleExistsAsync("Moderator"))
+            {
+                await _roleManager.CreateAsync(new IdentityRole("Moderator"));
+            }
+
+            // Seçilen rolü kullanıcıya ata
+            await _userManager.AddToRoleAsync(user, dto.Role);
         }
 
-        // Kullanıcı giriş işlemi
-        public async Task<SignInResult> LoginAsync(LoginDto dto)
-        {
-            return await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, dto.RememberMe, lockoutOnFailure: false);
-        }
+        return result;
+    }
 
-        // Email ile kullanıcı bulma
-        public async Task<ApplicationUser> GetUserByEmailAsync(string email)
-        {
-            return await _userManager.FindByEmailAsync(email);
-        }
+    // Kullanıcı giriş işlemi
+    public async Task<SignInResult> LoginAsync(LoginDto dto)
+    {
+        return await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, dto.RememberMe, lockoutOnFailure: false);
+    }
 
-        // Kullanıcıyı belirtilen role atama
-        public async Task AddUserToRoleAsync(ApplicationUser user, string role)
-        {
-            await _userManager.AddToRoleAsync(user, role);
-        }
+    // Email ile kullanıcı bulma
+    public async Task<ApplicationUser> GetUserByEmailAsync(string email)
+    {
+        return await _userManager.FindByEmailAsync(email);
+    }
+
+    // ID ile kullanıcıyı getirme
+    public async Task<UserDto> GetUserByIdAsync(string id)
+    {
+        return await _userRepository.GetById(id);
+    }
+
+    // Kullanıcıyı belirtilen role atama
+    public async Task AddUserToRoleAsync(ApplicationUser user, string role)
+    {
+        await _userManager.AddToRoleAsync(user, role);
+    }
+
+    // Kullanıcıları listeleme
+    public async Task<List<UserDto>> GetAllUsers()
+    {
+        return await _userRepository.GetAll();
+    }
+
+    // Kullanıcı güncelleme
+    public Task<ResultDto> UpdateUserAsync(UserDto userDto)
+    {
+        return _userRepository.Update(userDto);
+    }
+
+    // Kullanıcı silme
+    public async Task<ResultDto> DeleteUser(string id)
+    {
+        return await _userRepository.Delete(id);
     }
 }

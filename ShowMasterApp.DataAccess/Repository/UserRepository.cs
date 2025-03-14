@@ -7,13 +7,13 @@ using ShowMasterApp.DataAccess.Context;
 
 namespace ShowMasterApp.DataAccess.Repository
 {
-    public class UserListRepository : IUserListRepository
+    public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UserListRepository(AppDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UserRepository(AppDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
@@ -54,7 +54,33 @@ namespace ShowMasterApp.DataAccess.Repository
             }
         }
 
-        public async Task<ResultDto> Update(UserListDto userDto)
+        public async Task<UserDto> GetById(string id)
+        {
+            var user = await _context.Users
+                .Where(u => u.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            // Kullanıcının rolünü almak için RoleManager'ı kullanıyoruz
+            var roles = await _userManager.GetRolesAsync(user);
+
+            // Role bilgisi varsa, ilk rolü alıyoruz
+            var role = roles.FirstOrDefault(); // Eğer kullanıcı birden fazla role sahipse, ilk rol alınacak
+
+            return new UserDto
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                Role = role // Role bilgisini ekliyoruz
+            };
+        }
+
+        public async Task<ResultDto> Update(UserDto userDto)
         {
             try
             {
@@ -71,14 +97,30 @@ namespace ShowMasterApp.DataAccess.Repository
 
                     if (currentRoles.Any())
                     {
-                        await _userManager.RemoveFromRolesAsync(existingUser, currentRoles);
+                        var removeRoleResult = await _userManager.RemoveFromRolesAsync(existingUser, currentRoles);
+                        if (!removeRoleResult.Succeeded)
+                        {
+                            return new ResultDto
+                            {
+                                Message = "Mevcut rollerden çıkarılamadı.",
+                                Success = false
+                            };
+                        }
                     }
 
                     // Yeni rolü kontrol et ve ata
                     var roleExists = await _roleManager.RoleExistsAsync(userDto.Role);
                     if (roleExists)
                     {
-                        await _userManager.AddToRoleAsync(existingUser, userDto.Role);
+                        var addRoleResult = await _userManager.AddToRoleAsync(existingUser, userDto.Role);
+                        if (!addRoleResult.Succeeded)
+                        {
+                            return new ResultDto
+                            {
+                                Message = "Yeni rol atanamadı.",
+                                Success = false
+                            };
+                        }
                     }
                     else
                     {
@@ -115,17 +157,17 @@ namespace ShowMasterApp.DataAccess.Repository
             }
         }
 
-        public async Task<List<UserListDto>> GetAll()
+        public async Task<List<UserDto>> GetAll()
         {
             var users = await _context.Users.ToListAsync();
-            var userList = new List<UserListDto>();
+            var userList = new List<UserDto>();
 
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 var role = roles.Any() ? string.Join(", ", roles) : "Bilinmiyor";
 
-                userList.Add(new UserListDto
+                userList.Add(new UserDto
                 {
                     Id = user.Id,
                     FullName = user.FullName,

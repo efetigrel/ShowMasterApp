@@ -3,5 +3,5 @@
 public class UserCompositeViewModel
 {
     public CreateUserDto? CreateUser { get; set; }
-    public List<UserListDto>? UserList { get; set; }  
+    public List<UserDto>? ListUser { get; set; }
 }
